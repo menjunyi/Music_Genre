@@ -26,7 +26,7 @@ class SVM:
 		return self.cls_map[idx] * linear_model >= 1
 
 	def _get_gradients(self, constrain, x, idx):
-		if constrain:
+		if constrain.all():
 			dw = self.lambda_param * self.w
 			db = 0
 			return dw, db

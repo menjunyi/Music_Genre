@@ -1,66 +1,34 @@
 # reference
-
-from sklearn.model_selection import train_test_split
-from matplotlib import pyplot as plt
-import numpy as np
+from sklearn.svm import NuSVC
 from SVM import SVM
-from sklearn import preprocessing
-import numpy as np
-import pickle
-import sklearn.metrics as metrics
-
-def safeLoad(filename):
-    return pickle.load(open(filename, 'rb'))
-
-def safeKeep(obj, filename):
-    with open(filename, 'wb') as op:
-        pickle.dump(obj.op, pickle.HIGHEST_PROTOCOL)
-
-def test():
-    pass
+import CNN
+import utils
 
 if __name__ == "__main__":
-    X, y = train_test_split()
-
+    X_train, X_test, y_train, y_test = utils.getDataset()
+    # my SVM test
     svm = SVM(n_iters=100)
-    svm.fit(X,y)
-    result = svm.predit(X)
-    X = np.array(safeLoad('trainvec.pkl'))
-    Y = safeLoad('labels.pkl')
-    testX = np.array(safeLoad('testvec.pkl'))
-    testY = np.array(safeLoad('testlabel.pkl'))
+    svm.fit(X_train,y_train)
+    predict_my = svm.predict(X_test)
 
-    clf = SVM()
+    # sklearn svm test
+    clf = NuSVC(kernel='rbf', nu = 0.00001, degree = 5)
+    clf.fit(X_train,y_train)
+    predict_nusvc = clf.predict(X_test)
 
-    X = preprocessing.scale(X)
-    testX = preprocessing.scale(testX)
+    print("sklearn prediction accuracy:", (predict_nusvc == y_test).sum() / predict_nusvc.shape[0])
 
-    clf.fit(X, Y)
+    print("my prediction accuracy:", (predict_my == y_test).sum() / predict_my.shape[0])
 
-    predVal = clf.predict(testX)
+    # CNN test
+    model = CNN.getModel(X_train)
+    print(model.summary())
+    model_history = CNN.trainModel(X_train, X_test, y_train, y_test, model=model, epochs=1500, optimizer='adam')
 
-    pop = []
-    jazz = []
-    metal = []
-    classical = []
 
-    for i, val in enumerate(testY):
-        if val == 'pop':
-            pop.append([val, predVal[i]])
-        elif val == 'jazz':
-            jazz.append([val, predVal[i]])
-        elif val == 'metal':
-            metal.append([val, predVal[i]])
-        else:
-            classical.append([val, predVal[i]])
+    test_loss, test_accuracy = model.evaluate(X_test, y_test, batch_size=128)
+    print("The test loss is :",test_loss)
+    print("\nThe test Accuracy is :",test_accuracy*100)
 
-    pop_accuracy = metrics.accuracy_score(pop[:][0], pop[:][1])
-    jazz_accuracy = metrics.accuracy_score(jazz[:][0], jazz[:][1])
-    metal_accuracy = metrics.accuracy_score(metal[:][0], metal[:][1])
-    classical_accuracy = metrics.accuracy_score(classical[:][0], classical[:][1])
-
-    print("Pop accuracy:", pop_accuracy)
-    print("Jazz accuracy:", jazz_accuracy)
-    print("Metal accuracy:", metal_accuracy)
-    print("Classical accuracy:", classical_accuracy)
-    print("Overall accuracy:", metrics.accuracy_score(testY, predVal))
+    #Plot the loss & accuracy curves for training & validation
+    CNN.plotValidate(model_history)
