@@ -1,13 +1,7 @@
 # reference: https://www.kaggle.com/code/aishwarya2210/let-s-tune-the-music-with-cnn-xgboost
 
-import matplotlib.pyplot as plt
-import pandas as pd
 from tensorflow import keras
 
-def plotValidate(history):
-    print("Validation Accuracy" ,max(history.history["val_accuracy"]))
-    pd.DataFrame(history.history).plot(figsize=(12 ,6))
-    plt.show()
 
 def trainModel(X_train, X_test,y_train, y_test, model, epochs, optimizer):
     batch_size = 128
@@ -33,6 +27,5 @@ def getModel(X_train):
         keras.layers.Dropout(0.2),
 
         keras.layers.Dense(10, activation="softmax"),
-
     ])
     return model

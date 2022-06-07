@@ -20,3 +20,7 @@ def getDataset():
     X = fit.fit_transform(np.array(final_data.iloc[:, :-1], dtype=float))
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     return X_train, X_test, y_train, y_test
+
+def plotValidate(history):
+    pd.DataFrame(history.history).plot(figsize=(12 ,6))
+    plt.show()

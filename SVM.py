@@ -3,7 +3,8 @@
 
 # reference: https://towardsdatascience.com/implementing-svm-from-scratch-784e4ad0bc6a
 import numpy as np
-
+import matplotlib.pyplot as plt
+import pandas as pd
 
 class SVM:
 	def __init__(self, learning_rate=1e-3, lambda_param=1e-2, n_iters=1000):
